@@ -7,4 +7,7 @@ data class Video(
     val subtitle: String,
     val thumb: String,
     val title: String
-)
+) {
+    val fullThumbUrl: String
+        get() = "https://storage.googleapis.com/gtv-videos-bucket/sample/"
+}
