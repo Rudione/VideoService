@@ -32,21 +32,19 @@ fun VideoPlayer(videoUrl: String, onClose: () -> Unit) {
             play()
         }
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.8f))
+            .padding(top = 8.dp, bottom = 16.dp)
     ) {
         AndroidView(
-            factory = { context ->
-                StyledPlayerView(context).apply {
-                    player = exoPlayer
-                }
-            },
+            factory = { StyledPlayerView(context).apply { player = exoPlayer } },
             modifier = Modifier.fillMaxSize()
         )
         IconButton(
-            onClick = { onClose() },
+            onClick = onClose,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)

@@ -30,42 +30,11 @@ fun HomeContent(
     onEvent: (VideoEvent) -> Unit,
     isVideoPlaying: Boolean,
     currentVideoSource: String,
-    onVideoClick: (Video) -> Unit  // Додаємо колбек для кліку
+    onVideoClick: (Video) -> Unit
 ) {
     if (videoState.videoList.isEmpty()) {
         HomeContentEmpty()
     } else {
-        VideoPlaylist(
-            videoState = videoState,
-            onEvent = onEvent,
-            isVideoPlaying = isVideoPlaying,
-            currentVideoSource = currentVideoSource,
-            onVideoClick = onVideoClick  // Передаємо колбек
-        )
-    }
-}
 
-@Composable
-fun VideoPlaylist(
-    videoState: VideoState,
-    onEvent: (VideoEvent) -> Unit,
-    isVideoPlaying: Boolean,
-    currentVideoSource: String,
-    onVideoClick: (Video) -> Unit  // Додаємо колбек для кліку
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 4.dp)
-    ) {
-        itemsIndexed(videoState.videoList, key = { index, movie -> movie.id }) { index, movie ->
-            VideoListItem(video = movie, onClick = {
-                onVideoClick(movie)
-            })
-
-            if (index >= videoState.videoList.size - 1 && !videoState.isLoading) {
-                onEvent(VideoEvent.LoadVideos(true))
-            }
-        }
     }
 }

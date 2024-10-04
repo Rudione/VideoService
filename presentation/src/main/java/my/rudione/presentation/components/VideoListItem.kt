@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -71,7 +72,7 @@ fun VideoListItem(
                 )
             )
             .clickable {
-                onClick()  // Додаємо обробник кліку
+                onClick()
             }
     ) {
         if (imageState is AsyncImagePainter.State.Error) {
@@ -97,14 +98,14 @@ fun VideoListItem(
                 imageBitmap = imageState.result.drawable.toBitmap().asImageBitmap()
             )
 
-            Image(
+            AsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(6.dp)
                     .height(250.dp)
                     .clip(RoundedCornerShape(22.dp)),
-                painter = imageState.painter,
-                contentDescription = video.title,
+                model = imageState,
+                contentDescription = video.description,
                 contentScale = ContentScale.Crop
             )
         }
