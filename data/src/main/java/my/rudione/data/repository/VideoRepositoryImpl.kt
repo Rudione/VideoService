@@ -1,5 +1,6 @@
 package my.rudione.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import my.rudione.data.local.VideoDatabase
@@ -52,6 +53,8 @@ class VideoRepositoryImpl @Inject constructor(
                 return@flow
             }
 
+            Log.d("VideoRepositoryImpl", "getAllVideos: ${videoListFromApi.size}")
+
             val videoEntities = videoListFromApi.map { videoDto ->
                 videoDto.toVideoEntity()
             }
@@ -61,6 +64,7 @@ class VideoRepositoryImpl @Inject constructor(
             emit(Resource.Success(
                 data = videoEntities.map { it.toVideoDomain() }
             ))
+            Log.d("VideoRepositoryImpl", "getAllVideos: ${videoEntities.size}")
             emit(Resource.Loading(false))
         }
     }

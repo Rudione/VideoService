@@ -5,7 +5,7 @@ import my.rudione.domain.model.Video
 
 sealed class VideoEvent: Event {
 
-    object LoadVideos: VideoEvent()
+    data class LoadVideos(val forceFetchFromRemote: Boolean): VideoEvent()
 
     data class PlayVideo(val video: Video): VideoEvent()
 

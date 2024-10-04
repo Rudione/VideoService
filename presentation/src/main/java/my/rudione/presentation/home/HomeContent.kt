@@ -64,7 +64,7 @@ fun VideoPlaylist(
             })
 
             if (index >= videoState.videoList.size - 1 && !videoState.isLoading) {
-                onEvent(VideoEvent.LoadVideos)
+                onEvent(VideoEvent.LoadVideos(true))
             }
         }
     }

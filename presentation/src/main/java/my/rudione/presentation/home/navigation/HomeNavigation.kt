@@ -16,7 +16,7 @@ fun NavGraphBuilder.homeRoute() {
         val videoState = homeViewModel.state.collectAsState().value
 
         LaunchedEffect(Unit) {
-            homeViewModel.onEvent(VideoEvent.LoadVideos)
+            homeViewModel.onEvent(VideoEvent.LoadVideos(true))
         }
 
         HomeScreen(

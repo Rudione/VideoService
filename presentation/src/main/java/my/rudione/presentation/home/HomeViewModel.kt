@@ -21,12 +21,12 @@ class HomeViewModel @Inject constructor(
     val state: StateFlow<VideoState> = _state.asStateFlow()
 
     init {
-        onEvent(VideoEvent.LoadVideos)
+        onEvent(VideoEvent.LoadVideos(true))
     }
 
     fun onEvent(event: VideoEvent) {
         when (event) {
-            is VideoEvent.LoadVideos -> getLoadVideos()
+            is VideoEvent.LoadVideos -> getLoadVideos(true)
             is VideoEvent.PlayVideo -> {
                 _state.update {
                     it.copy(currentVideo = event.video, isPlaying = true)
@@ -59,7 +59,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getLoadVideos() {
+    private fun getLoadVideos(forceFetchFromRemote: Boolean) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             videoRepository.getAllVideos(forceFetchFromRemote = false).collect { resource ->
