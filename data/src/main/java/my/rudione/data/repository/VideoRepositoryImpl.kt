@@ -11,11 +11,12 @@ import my.rudione.domain.common.Resource
 import my.rudione.domain.model.Video
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
-class VideoRepositoryImpl(
+class VideoRepositoryImpl @Inject constructor(
     private val videoApi: ApiService,
     private val videoDatabase: VideoDatabase
-): VideoRepository {
+) : VideoRepository {
     override fun getAllVideos(
         forceFetchFromRemote: Boolean
     ): Flow<Resource<List<Video>>> {
@@ -26,7 +27,7 @@ class VideoRepositoryImpl(
 
             val shouldLoadLocalVideo = localVideoList.isNotEmpty() && !forceFetchFromRemote
 
-            if(shouldLoadLocalVideo) {
+            if (shouldLoadLocalVideo) {
                 emit(Resource.Success(
                     data = localVideoList.map { videoEntity ->
                         videoEntity.toVideoDomain()
@@ -41,12 +42,12 @@ class VideoRepositoryImpl(
                 videoApi.getAllVideo()
             } catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resource.Error(message = "Помилка завантаження відео"))
+                emit(Resource.Error(message = "Error loading videos"))
                 emit(Resource.Loading(false))
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resource.Error(message = "Помилка завантаження відео"))
+                emit(Resource.Error(message = "Error loading videos"))
                 emit(Resource.Loading(false))
                 return@flow
             }
@@ -70,16 +71,14 @@ class VideoRepositoryImpl(
 
             val videoEntity = videoDatabase.videoDao().getVideosByTitle(query)
 
-            if(videoEntity != null) {
+            if (videoEntity != null) {
                 emit(Resource.Success(videoEntity.map { it.toVideoDomain() }))
                 emit(Resource.Loading(false))
                 return@flow
             }
 
-            emit(Resource.Error(message = "Відео не знайдено"))
+            emit(Resource.Error(message = "Video not found"))
             emit(Resource.Loading(false))
         }
     }
-
-
 }
