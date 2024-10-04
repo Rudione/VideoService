@@ -1,6 +1,6 @@
 package my.rudione.data.remote.dto
 
-data class MediaCategory(
+data class VideoCategory(
     val name: String,
     val videos: List<VideoDto>
 )

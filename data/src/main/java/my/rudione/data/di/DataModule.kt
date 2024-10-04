@@ -1,9 +1,12 @@
 package my.rudione.data.di
 
+import android.app.Application
+import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import my.rudione.data.local.VideoDatabase
 import my.rudione.data.remote.ApiService
 import my.rudione.domain.common.Constants
 import okhttp3.OkHttpClient
@@ -33,5 +36,15 @@ object DataModule {
             .client(client)
             .build()
             .create(ApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieDatabase(app: Application): VideoDatabase {
+        return Room.databaseBuilder(
+            app,
+            VideoDatabase::class.java,
+            Constants.DATABASE_NAME
+        ).build()
     }
 }
