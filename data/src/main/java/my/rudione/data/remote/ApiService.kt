@@ -1,9 +1,9 @@
 package my.rudione.data.remote
 
-import my.rudione.data.remote.dto.VideoResponse
+import my.rudione.data.remote.dto.VideoDto
 import retrofit2.http.GET
 
 interface ApiService {
     @GET("jsturgis/3b19447b304616f18657/raw/gistfile1.txt")
-    suspend fun getAllVideo(): VideoResponse
+    suspend fun getAllVideo(): List<VideoDto>
 }

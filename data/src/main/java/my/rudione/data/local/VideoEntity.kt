@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken
 @Entity(tableName = "video")
 data class VideoEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     val description: String,
     val sources: List<String>,
     val subtitle: String,
