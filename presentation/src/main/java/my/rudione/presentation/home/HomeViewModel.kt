@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import my.rudione.domain.VideoRepository
@@ -21,15 +22,16 @@ class HomeViewModel @Inject constructor(
     val state: StateFlow<VideoState> = _state.asStateFlow()
 
     init {
-        onEvent(VideoEvent.LoadVideos)
+        onEvent(VideoEvent.LoadVideosFirstTime(false))
     }
 
     fun onEvent(event: VideoEvent) {
         when (event) {
             is VideoEvent.LoadVideos -> getLoadVideos(true)
+            is VideoEvent.LoadVideosFirstTime -> getLoadVideos(false)
             is VideoEvent.PlayVideo -> {
                 _state.update {
-                    it.copy(currentVideo = event.video, isPlaying = true)
+                    it.copy(currentVideo = event.video, isPlaying = true, videoProgress = 0f)
                 }
             }
             is VideoEvent.PauseVideo -> {
@@ -39,16 +41,24 @@ class HomeViewModel @Inject constructor(
             }
             is VideoEvent.NextVideo -> {
                 val currentIndex = _state.value.videoList.indexOf(_state.value.currentVideo)
-                val nextIndex = (currentIndex + 1).coerceAtMost(_state.value.videoList.size - 1)
+                val nextIndex = if (currentIndex != -1) (currentIndex + 1) % _state.value.videoList.size else 0
                 _state.update {
-                    it.copy(currentVideo = _state.value.videoList[nextIndex], isPlaying = true)
+                    it.copy(
+                        currentVideo = _state.value.videoList[nextIndex],
+                        isPlaying = true,
+                        videoProgress = 0f
+                    )
                 }
             }
             is VideoEvent.PreviousVideo -> {
                 val currentIndex = _state.value.videoList.indexOf(_state.value.currentVideo)
-                val prevIndex = (currentIndex - 1).coerceAtLeast(0)
+                val prevIndex = if (currentIndex > 0) currentIndex - 1 else _state.value.videoList.size - 1
                 _state.update {
-                    it.copy(currentVideo = _state.value.videoList[prevIndex], isPlaying = true)
+                    it.copy(
+                        currentVideo = _state.value.videoList[prevIndex],
+                        isPlaying = true,
+                        videoProgress = 0f
+                    )
                 }
             }
             is VideoEvent.SeekTo -> {
@@ -62,15 +72,17 @@ class HomeViewModel @Inject constructor(
     private fun getLoadVideos(forceFetchFromRemote: Boolean) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            videoRepository.getAllVideos(forceFetchFromRemote = forceFetchFromRemote).collect { resource ->
+            videoRepository.getAllVideos(forceFetchFromRemote).collectLatest { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        _state.update {
-                            it.copy(
-                                videoList = resource.data ?: emptyList(),
-                                currentVideo = resource.data?.firstOrNull(),
-                                isLoading = false
-                            )
+                        resource.data?.let { videoList ->
+                            _state.update {
+                                it.copy(
+                                    videoList = videoList,
+                                    currentVideo = videoList.first(),
+                                    isLoading = false
+                                )
+                            }
                         }
                     }
                     is Resource.Error -> {
@@ -86,3 +98,4 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
+
