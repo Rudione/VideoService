@@ -38,7 +38,6 @@ fun VideoPlayer(
 ) {
     val context = LocalContext.current
     val currentVideo = homeViewModel.state.value.currentVideo
-    val currentVideoNoChanges = remember { currentVideo?.title }
     var isPlaying by remember { mutableStateOf(true) }
 
     DisposableEffect(videoUrl) {
@@ -50,9 +49,6 @@ fun VideoPlayer(
         exoPlayer.play()
 
         onDispose {
-            if(currentVideo?.title == currentVideoNoChanges) {
-                homeViewModel.onEvent(VideoEvent.SeekTo(exoPlayer.currentPosition.toFloat()))
-            }
             exoPlayer.stop()
         }
     }
@@ -79,7 +75,9 @@ fun VideoPlayer(
                 .padding(top = 96.dp)
                 .padding(horizontal = 16.dp)
         ) {
-            IconButton(onClick = onPrevious, modifier = Modifier.size(64.dp)) {
+            IconButton(onClick = {
+                onPrevious()
+            }, modifier = Modifier.size(64.dp)) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowLeft,
                     contentDescription = "Previous",
@@ -87,7 +85,9 @@ fun VideoPlayer(
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
-            IconButton(onClick = onNext, modifier = Modifier.size(64.dp)) {
+            IconButton(onClick = {
+                onNext()
+            }, modifier = Modifier.size(64.dp)) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Next",
@@ -112,6 +112,11 @@ fun VideoPlayer(
             }
 
             override fun onPlayerError(error: PlaybackException) {
+            }
+
+            override fun onEvents(player: Player, events: Player.Events) {
+                super.onEvents(player, events)
+                homeViewModel.onEvent(VideoEvent.SeekTo(player.currentPosition.toFloat()))
             }
         }
 
