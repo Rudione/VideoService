@@ -1,5 +1,6 @@
 package my.rudione.presentation.components
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,7 @@ import androidx.media3.common.Player
 import my.rudione.presentation.home.HomeViewModel
 import my.rudione.presentation.home.VideoEvent
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun VideoPlayer(
     videoUrl: String,
@@ -35,6 +37,8 @@ fun VideoPlayer(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val currentVideo = homeViewModel.state.value.currentVideo
+    val currentVideoNoChanges = remember { currentVideo?.title }
     var isPlaying by remember { mutableStateOf(true) }
 
     DisposableEffect(videoUrl) {
@@ -46,7 +50,9 @@ fun VideoPlayer(
         exoPlayer.play()
 
         onDispose {
-            homeViewModel.onEvent(VideoEvent.SeekTo(exoPlayer.currentPosition.toFloat()))
+            if(currentVideo?.title == currentVideoNoChanges) {
+                homeViewModel.onEvent(VideoEvent.SeekTo(exoPlayer.currentPosition.toFloat()))
+            }
             exoPlayer.stop()
         }
     }

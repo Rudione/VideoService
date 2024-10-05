@@ -3,6 +3,7 @@ package my.rudione.presentation.home
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -70,10 +71,18 @@ fun VideoPlaylist(
             itemsIndexed(
                 items = videoList,
                 key = { index, video -> "${video.id}-$index" }
-            ) { _, video ->
+            ) { index, video ->
+
+                val isFirstRow = index < 2
+                val isLastRow = index >= videoList.size - (videoList.size % 2)
+
+                val topPadding = if (isFirstRow) 16.dp else 8.dp
+                val bottomPadding = if (isLastRow) 16.dp else 8.dp
+
                 VideoListItem(
                     video = video,
-                    onClick = { onVideoSelected(video) }
+                    onClick = { onVideoSelected(video) },
+                    modifier = Modifier.padding(top = topPadding, bottom = bottomPadding)
                 )
             }
         }

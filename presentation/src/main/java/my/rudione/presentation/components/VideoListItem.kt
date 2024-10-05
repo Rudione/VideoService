@@ -34,7 +34,8 @@ import my.rudione.domain.model.Video
 @Composable
 fun VideoListItem(
     video: Video,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val imageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -47,7 +48,7 @@ fun VideoListItem(
     var dominantColor by remember { mutableStateOf(defaultColor) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .wrapContentHeight()
             .width(200.dp)
             .padding(8.dp)
@@ -69,7 +70,7 @@ fun VideoListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(6.dp)
-                    .height(250.dp)
+                    .height(150.dp)
                     .clip(RoundedCornerShape(22.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
@@ -91,7 +92,7 @@ fun VideoListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(6.dp)
-                    .height(250.dp)
+                    .height(150.dp)
                     .clip(RoundedCornerShape(22.dp)),
                 painter = imageState.painter,
                 contentDescription = video.description,
