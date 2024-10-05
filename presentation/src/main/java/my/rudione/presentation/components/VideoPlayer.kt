@@ -19,36 +19,28 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import androidx.media3.common.Player
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
 
 @Composable
 fun VideoPlayer(
     videoUrl: String,
     onClose: () -> Unit,
     onPrevious: () -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    exoPlayer: ExoPlayer // Получаем ExoPlayer через параметры
 ) {
     val context = LocalContext.current
     var isPlaying by remember { mutableStateOf(true) }
-
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            repeatMode = Player.REPEAT_MODE_OFF
-            playWhenReady = isPlaying
-        }
-    }
 
     DisposableEffect(videoUrl) {
         val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
-
         exoPlayer.play()
 
         onDispose {
             exoPlayer.stop()
-            exoPlayer.release()
         }
     }
 
@@ -73,18 +65,14 @@ fun VideoPlayer(
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
         ) {
-            IconButton(onClick = {
-                onPrevious()
-            }) {
+            IconButton(onClick = onPrevious) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowLeft,
                     contentDescription = "Previous",
                     tint = Color.White
                 )
             }
-            IconButton(onClick = {
-                onNext()
-            }) {
+            IconButton(onClick = onNext) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Next",

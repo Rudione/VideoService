@@ -11,8 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.EntryPointAccessors
+import my.rudione.di.ExoPlayerEntryPoint
 import my.rudione.domain.model.Video
 import my.rudione.presentation.components.HomeContentEmpty
 import my.rudione.presentation.components.VideoListItem
@@ -21,14 +24,13 @@ import my.rudione.presentation.components.VideoPlayer
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
-    // Собираем текущее состояние через collectAsState
     val videoState by homeViewModel.state.collectAsState()
+    val exoPlayer = EntryPointAccessors.fromApplication(LocalContext.current, ExoPlayerEntryPoint::class.java).exoplayer()
 
     Scaffold(
         content = {
-            // Передаем список видео в плейлист
             VideoPlaylist(
                 videoList = videoState.videoList,
                 onVideoSelected = { video ->
@@ -36,14 +38,14 @@ fun HomeScreen(
                 }
             )
 
-            // Отображаем плеер, если выбрано текущее видео и оно воспроизводится
             videoState.currentVideo?.let { currentVideo ->
                 if (videoState.isPlaying) {
                     VideoPlayer(
                         videoUrl = currentVideo.sources.firstOrNull() ?: "",
                         onNext = { homeViewModel.onEvent(VideoEvent.NextVideo) },
                         onPrevious = { homeViewModel.onEvent(VideoEvent.PreviousVideo) },
-                        onClose = { homeViewModel.onEvent(VideoEvent.PauseVideo) }
+                        onClose = { homeViewModel.onEvent(VideoEvent.PauseVideo) },
+                        exoPlayer = exoPlayer
                     )
                 }
             }

@@ -79,7 +79,7 @@ class HomeViewModel @Inject constructor(
                             _state.update {
                                 it.copy(
                                     videoList = videoList,
-                                    currentVideo = videoList.first(),
+                                    currentVideo = videoList.firstOrNull(),
                                     isLoading = false
                                 )
                             }
