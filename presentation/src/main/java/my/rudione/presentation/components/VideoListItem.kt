@@ -95,7 +95,7 @@ fun VideoListItem(
                     .clip(RoundedCornerShape(22.dp)),
                 painter = imageState.painter,
                 contentDescription = video.description,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Inside
             )
         }
 

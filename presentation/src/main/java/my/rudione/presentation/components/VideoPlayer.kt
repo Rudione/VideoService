@@ -28,7 +28,7 @@ fun VideoPlayer(
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    exoPlayer: ExoPlayer // Получаем ExoPlayer через параметры
+    exoPlayer: ExoPlayer
 ) {
     val context = LocalContext.current
     var isPlaying by remember { mutableStateOf(true) }
@@ -48,7 +48,7 @@ fun VideoPlayer(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.8f))
-            .padding(top = 8.dp, bottom = 16.dp)
+            .padding(vertical = 24.dp)
     ) {
         AndroidView(
             factory = {
@@ -62,24 +62,27 @@ fun VideoPlayer(
 
         Row(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
+                .align(Alignment.TopCenter)
+                .padding(top = 96.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            IconButton(onClick = onPrevious) {
+            IconButton(onClick = onPrevious, modifier = Modifier.size(64.dp)) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowLeft,
                     contentDescription = "Previous",
                     tint = Color.White
                 )
             }
-            IconButton(onClick = onNext) {
+            Spacer(modifier = Modifier.width(16.dp))
+            IconButton(onClick = onNext, modifier = Modifier.size(64.dp)) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Next",
                     tint = Color.White
                 )
             }
-            IconButton(onClick = onClose) {
+            Spacer(modifier = Modifier.width(16.dp))
+            IconButton(onClick = onClose, modifier = Modifier.size(64.dp)) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Close",
