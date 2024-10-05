@@ -18,5 +18,4 @@ sealed class VideoEvent: Event {
     object NextVideo: VideoEvent()
 
     data class SeekTo(val progress: Float): VideoEvent()
-
 }

@@ -2,6 +2,7 @@ package my.rudione.presentation.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -33,23 +33,25 @@ fun HomeScreen(
 
     Scaffold(
         content = {
-            VideoPlaylist(
-                videoList = videoState.videoList,
-                onVideoSelected = { video ->
-                    homeViewModel.onEvent(VideoEvent.PlayVideo(video))
-                }
-            )
+            Row(modifier = Modifier.fillMaxSize()) {
+                VideoPlaylist(
+                    videoList = videoState.videoList,
+                    onVideoSelected = { video ->
+                        homeViewModel.onEvent(VideoEvent.PlayVideo(video))
+                    },
+                    modifier = Modifier.weight(1f)
+                )
 
-            videoState.currentVideo?.let { currentVideo ->
-                if (videoState.isPlaying) {
-                    VideoPlayer(
-                        videoUrl = currentVideo.sources.firstOrNull() ?: "",
-                        onNext = { homeViewModel.onEvent(VideoEvent.NextVideo) },
-                        onPrevious = { homeViewModel.onEvent(VideoEvent.PreviousVideo) },
-                        onClose = { homeViewModel.onEvent(VideoEvent.PauseVideo) },
-                        exoPlayer = exoPlayer,
-                        homeViewModel = homeViewModel
-                    )
+                videoState.currentVideo?.let { currentVideo ->
+                    if (videoState.isPlaying) {
+                        VideoPlayer(
+                            videoUrl = homeViewModel.state.value.currentVideo?.sources?.firstOrNull() ?: "",
+                            onClose = { homeViewModel.onEvent(VideoEvent.PauseVideo) },
+                            exoPlayer = exoPlayer,
+                            homeViewModel = homeViewModel,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
         }
@@ -60,13 +62,14 @@ fun HomeScreen(
 fun VideoPlaylist(
     videoList: List<Video>,
     onVideoSelected: (Video) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (videoList.isEmpty()) {
         HomeContentEmpty()
     } else {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 4.dp)
         ) {
             itemsIndexed(

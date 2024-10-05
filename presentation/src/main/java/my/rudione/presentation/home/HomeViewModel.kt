@@ -1,5 +1,6 @@
 package my.rudione.presentation.home
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val videoRepository: VideoRepository
+    private val videoRepository: VideoRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(VideoState())
@@ -79,7 +80,7 @@ class HomeViewModel @Inject constructor(
                             _state.update {
                                 it.copy(
                                     videoList = videoList,
-                                    currentVideo = videoList.firstOrNull(),
+                                    currentVideo = videoList.first(),
                                     isLoading = false
                                 )
                             }

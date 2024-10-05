@@ -14,6 +14,6 @@ fun SetupNavGraph(
         startDestination = startDestination,
         navController = navController
     ) {
-        homeRoute()
+        homeRoute(onBackPressed = { navController.popBackStack() })
     }
 }

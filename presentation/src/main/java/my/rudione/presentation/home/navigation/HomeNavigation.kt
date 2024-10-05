@@ -7,7 +7,9 @@ import my.rudione.presentation.Screen
 import my.rudione.presentation.home.HomeScreen
 import my.rudione.presentation.home.HomeViewModel
 
-fun NavGraphBuilder.homeRoute() {
+fun NavGraphBuilder.homeRoute(
+    onBackPressed: () -> Unit
+) {
     composable(route = Screen.Home.route) {
         val homeViewModel = hiltViewModel<HomeViewModel>()
 
