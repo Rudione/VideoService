@@ -16,11 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import my.rudione.presentation.home.HomeViewModel
+import my.rudione.presentation.home.VideoEvent
 
 @Composable
 fun VideoPlayer(
@@ -28,7 +31,8 @@ fun VideoPlayer(
     onClose: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    exoPlayer: ExoPlayer
+    exoPlayer: ExoPlayer,
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var isPlaying by remember { mutableStateOf(true) }
@@ -37,9 +41,12 @@ fun VideoPlayer(
         val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
+
+        exoPlayer.seekTo(homeViewModel.state.value.videoProgress.toLong())
         exoPlayer.play()
 
         onDispose {
+            homeViewModel.onEvent(VideoEvent.SeekTo(exoPlayer.currentPosition.toFloat()))
             exoPlayer.stop()
         }
     }

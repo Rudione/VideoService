@@ -45,7 +45,8 @@ fun HomeScreen(
                         onNext = { homeViewModel.onEvent(VideoEvent.NextVideo) },
                         onPrevious = { homeViewModel.onEvent(VideoEvent.PreviousVideo) },
                         onClose = { homeViewModel.onEvent(VideoEvent.PauseVideo) },
-                        exoPlayer = exoPlayer
+                        exoPlayer = exoPlayer,
+                        homeViewModel = homeViewModel
                     )
                 }
             }
