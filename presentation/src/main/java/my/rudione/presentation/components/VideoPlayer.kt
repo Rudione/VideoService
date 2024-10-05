@@ -2,10 +2,7 @@ package my.rudione.presentation.components
 
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -19,9 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.StyledPlayerView
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+import androidx.media3.common.Player
+import androidx.media3.common.PlaybackException
 
 @Composable
 fun VideoPlayer(
@@ -31,9 +30,12 @@ fun VideoPlayer(
     onNext: () -> Unit
 ) {
     val context = LocalContext.current
+    var isPlaying by remember { mutableStateOf(true) }
+
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            playWhenReady = true
+            repeatMode = Player.REPEAT_MODE_OFF
+            playWhenReady = isPlaying
         }
     }
 
@@ -41,11 +43,11 @@ fun VideoPlayer(
         val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
+
         exoPlayer.play()
 
         onDispose {
             exoPlayer.stop()
-            exoPlayer.clearMediaItems()
             exoPlayer.release()
         }
     }
@@ -57,26 +59,36 @@ fun VideoPlayer(
             .padding(top = 8.dp, bottom = 16.dp)
     ) {
         AndroidView(
-            factory = { StyledPlayerView(context).apply { player = exoPlayer } },
+            factory = {
+                PlayerView(context).apply {
+                    player = exoPlayer
+                    useController = true
+                }
+            },
             modifier = Modifier.fillMaxSize()
         )
+
         Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
         ) {
-            IconButton(onClick = onPrevious) {
+            IconButton(onClick = {
+                onPrevious()
+            }) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowLeft,
                     contentDescription = "Previous",
                     tint = Color.White
                 )
             }
-            IconButton(onClick = onNext) {
+            IconButton(onClick = {
+                onNext()
+            }) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "Next",
-                    tint = Color.White,
+                    tint = Color.White
                 )
             }
             IconButton(onClick = onClose) {
@@ -86,6 +98,22 @@ fun VideoPlayer(
                     tint = Color.White
                 )
             }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(isPlayingNow: Boolean) {
+                isPlaying = isPlayingNow
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+            }
+        }
+
+        exoPlayer.addListener(listener)
+        onDispose {
+            exoPlayer.removeListener(listener)
         }
     }
 }
